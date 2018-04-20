@@ -39,7 +39,7 @@ separateVille = function(data,station){
 
 
 calculRegressionResiduOrdre2 = function(dataMeteo,dataTest=NULL,methodRegression="pls",
-                                        ssize = 0.5,preprocs = c("scale","BoxCox","zv"),ctrl = "cv",nbctrl = 10,paramGrid = NULL,mod = NULL, ordre = 2){
+                                        ssize = 0.5,preprocs = c("scale","BoxCox","zv"),ctrl = "cv",nbctrl = 10,paramGrid = NULL, ordre = 2){
   library(caret)
 
   # Indices echantillon d'apprentissage
@@ -66,12 +66,6 @@ calculRegressionResiduOrdre2 = function(dataMeteo,dataTest=NULL,methodRegression
   
   trainDescr=predict(xTrans,trainDescr)
   
-  if (is.null(mod) == FALSE){
-    trainDescr = ExtractIdStat(trainDescr,mode=mod)
-  }
-  
-  
-  
   # Choix de la validation croisée
   Control=trainControl(method=ctrl,number=nbctrl)
   
@@ -89,9 +83,6 @@ calculRegressionResiduOrdre2 = function(dataMeteo,dataTest=NULL,methodRegression
   # Donnees test
   testDescr = dataTest[,-which(names(dataTest)=="tH2")]
   testDescr=predict(xTrans,testDescr)
-  if (is.null(mod) == FALSE){
-    testDescr = ExtractIdStat(testDescr,mode=mod)
-  }
   
   
   # Prediction
@@ -150,17 +141,29 @@ Meteo_DataTest=read.csv(PathTest,header=TRUE,sep=";", skipNul = FALSE)
 
 
 Meteo_DataTest=data.frame(lapply(Meteo_DataTest, function(x) {gsub("\\,", "\\.", x)}))
+
 Meteo_DataTest_date = Meteo_DataTest$date
+
 Meteo_DataTest_mois = Meteo_DataTest$mois
+
 Meteo_DataTest$Mois = as.numeric(substr(as.character(Meteo_DataTest$date),6,7))
+
 Meteo_DataTest$Jour = yday(Meteo_DataTest$date)
+
 Meteo_DataTest = Meteo_DataTest[,-which(names(Meteo_DataTest) == "date")]
+
 Meteo_DataTest = Meteo_DataTest[,-which(names(Meteo_DataTest) == "mois")]
+
 Meteo_DataTest=data.frame(lapply(Meteo_DataTest, function(x) {as.numeric(as.character(x))}))
+
 Meteo_DataTest = transformVille(Meteo_DataTest)
+
 Meteo_DataTest$Jour[which(Meteo_DataTest$Jour == 366)] = 365
+
 Meteo_DataTest$ech2 = Meteo_DataTest$ech
+
 Meteo_DataTest$ech3= Meteo_DataTest$ech
+
 Meteo_DataTest$ech2[which(Meteo_DataTest$ech %in%  c(1))] = 1
 Meteo_DataTest$ech2[which(Meteo_DataTest$ech %in%  c(2))] = 2
 Meteo_DataTest$ech2[which(Meteo_DataTest$ech %in%  c(3,4))] = 3
@@ -169,12 +172,17 @@ Meteo_DataTest$ech2[which(Meteo_DataTest$ech %in%  c(9,10,11,12))] = 5
 Meteo_DataTest$ech2[which(Meteo_DataTest$ech %in%  c(13,14,15,16,17,18))] = 6
 Meteo_DataTest$ech2[which(Meteo_DataTest$ech %in%  c(19,20,21,22,23,24))] = 7
 Meteo_DataTest$ech2[which(Meteo_DataTest$ech %in%  c(25,26,27,28,29,30,31,32,33,34,35,36))] = 8
+
 Meteo_DataTest$Heure = Meteo_DataTest$ech %% 24
 Meteo_DataTest$Heure[which(Meteo_DataTest$ech3 == 0)] = 24
+
 Meteo_DataTest$Saison[which(Meteo_DataTest$Jour %in%  c(80:171))] = 1
 Meteo_DataTest$Saison[which(Meteo_DataTest$Jour %in%  c(172:263))] = 2
 Meteo_DataTest$Saison[which(Meteo_DataTest$Jour %in%  c(264:354))] = 3
 Meteo_DataTest$Saison[which(Meteo_DataTest$Jour %in%  c(1:79,355:365))] = 4
+
+
+
 
 
 
@@ -190,17 +198,29 @@ for (i in 1:36){
 }
 
 Meteo_Data=data.frame(lapply(Meteo_Data, function(x) {gsub("\\,", "\\.", x)}))
+
 Meteo_Data_date = Meteo_Data$date
+
 Meteo_Data_mois = Meteo_Data$mois
+
 Meteo_Data$Mois = as.numeric(substr(as.character(Meteo_Data$date),6,7))
+
 Meteo_Data$Jour = yday(Meteo_Data$date)
+
 Meteo_Data = Meteo_Data[,-which(names(Meteo_Data) == "date")]
+
 Meteo_Data = Meteo_Data[,-which(names(Meteo_Data) == "mois")]
+
 Meteo_Data=data.frame(lapply(Meteo_Data, function(x) {as.numeric(as.character(x))}))
+
 Meteo_Data = transformVille(Meteo_Data,1)
+
 Meteo_Data$Jour[which(Meteo_Data$Jour == 366)] = 365
+
 Meteo_Data$Heure = Meteo_Data$ech
+
 Meteo_Data$Heure= Meteo_Data$ech
+
 Meteo_Data$ech2[which(Meteo_Data$ech %in%  c(1))] = 1
 Meteo_Data$ech2[which(Meteo_Data$ech %in%  c(2))] = 2
 Meteo_Data$ech2[which(Meteo_Data$ech %in%  c(3,4))] = 3
@@ -209,8 +229,10 @@ Meteo_Data$ech2[which(Meteo_Data$ech %in%  c(9,10,11,12))] = 5
 Meteo_Data$ech2[which(Meteo_Data$ech %in%  c(13,14,15,16,17,18))] = 6
 Meteo_Data$ech2[which(Meteo_Data$ech %in%  c(19,20,21,22,23,24))] = 7
 Meteo_Data$ech2[which(Meteo_Data$ech %in%  c(25,26,27,28,29,30,31,32,33,34,35,36))] = 8
+
 Meteo_Data$ech3 = Meteo_Data$ech %% 24
 Meteo_Data$ech3[which(Meteo_Data$ech3 == 0)] = 24
+
 Meteo_Data$Saison[which(Meteo_Data$Jour %in%  c(80:171))] = 1
 Meteo_Data$Saison[which(Meteo_Data$Jour %in%  c(172:263))] = 2
 Meteo_Data$Saison[which(Meteo_Data$Jour %in%  c(264:354))] = 3
@@ -361,7 +383,7 @@ Meteo_DataTest4[,1] = as.numeric(Meteo_DataTest4[,1])
 # Code qui met 500 minutes à tourner sur un ordi avec 8 coeurs
 itermax = 50
 for (i in 1:itermax){
-	saveme[,4] = saveme[,4] + (1/itermax)*calculRegressionResiduOrdre2(Meteo_Data4,Meteo_DataTest4,methodRegression = myModel,ssize=siz,nbctrl = cvct, ctrl = mectrl,mod = eids, preprocs = prep, ordre = degr, paramGrid = parametersGrid)
+	saveme[,4] = saveme[,4] + (1/itermax)*calculRegressionResiduOrdre2(Meteo_Data4,Meteo_DataTest4,methodRegression = myModel,ssize=siz,nbctrl = cvct, ctrl = mectrl, preprocs = prep, ordre = degr, paramGrid = parametersGrid)
 }
 
 saveme = transformVille(saveme,sens=0)
